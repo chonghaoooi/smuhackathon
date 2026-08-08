@@ -1,0 +1,1198 @@
+# Product Requirements Document (PRD)
+
+## Portfolio Therapist
+
+### 1. Product Overview
+
+**Portfolio Therapist** is a behavioural-finance analytics feature integrated into the existing **Cashbux Market Simulator**.
+
+Instead of only showing users how their portfolio performed, Portfolio Therapist analyses **how they invest**.
+
+It identifies measurable behavioural patterns from a user's transaction history, such as:
+
+* FOMO buying
+* Repeated averaging down
+* Portfolio concentration
+* Overtrading
+* Loss aversion, if implemented
+* Other behavioural patterns added in future versions
+
+The system then presents these findings through two modes:
+
+**Roast Mode**
+A humorous and exaggerated explanation of the user's behaviour.
+
+**Serious Mode**
+A neutral behavioural-finance explanation supported by the calculated evidence.
+
+A key design principle is:
+
+> **Analytics determines the facts. The LLM determines how the facts are communicated.**
+
+The LLM must never independently decide whether the user is a "good" or "bad" investor.
+
+---
+
+# 2. Problem Statement
+
+Most investing platforms focus on:
+
+* Portfolio value
+* Profit and loss
+* Asset allocation
+* Market performance
+* Individual stock performance
+
+However, they rarely analyse the **behaviour of the investor themselves**.
+
+Two investors may experience the same return but reach that outcome through very different behaviours.
+
+For example, a user may:
+
+* repeatedly buy after major price increases,
+* continually increase exposure to a falling security,
+* hold an extremely concentrated portfolio,
+* trade far more frequently than intended.
+
+Traditional portfolio dashboards display the outcome but provide little insight into these behavioural patterns.
+
+Portfolio Therapist aims to make these patterns visible, understandable and memorable.
+
+---
+
+# 3. Product Goal
+
+The main goal is to help Cashbux users understand their own investing behaviour through explainable behavioural analytics.
+
+The feature should:
+
+1. Analyse historical user transactions.
+2. Detect measurable behavioural patterns.
+3. Show clear evidence for every detected behaviour.
+4. Present findings in an engaging format.
+5. Allow users to switch between humorous and serious explanations.
+6. Avoid providing direct investment recommendations.
+7. Integrate naturally into the existing Cashbux simulation.
+
+---
+
+# 4. Target Users
+
+### Primary User
+
+Cashbux participants who are actively trading within the market simulation.
+
+These users may include:
+
+* beginner investors,
+* students learning about markets,
+* casual investors,
+* hackathon judges testing the application.
+
+### Secondary User
+
+Users who may eventually upload external transaction histories for behavioural analysis.
+
+This is considered a future extension rather than part of the initial MVP.
+
+---
+
+# 5. Core Value Proposition
+
+> **Existing investment platforms analyse your portfolio. Portfolio Therapist analyses the investor behind the portfolio.**
+
+Portfolio Therapist differentiates Cashbux by transforming raw trading activity into behavioural insights.
+
+Instead of:
+
+> Portfolio return: -12%
+
+The system may explain:
+
+> You purchased this stock three times following significant price increases and it now represents 34% of your portfolio.
+
+Roast Mode may then present:
+
+> You didn't chase the stock. You simply followed it very aggressively uphill.
+
+---
+
+# 6. Design Principles
+
+## 6.1 Analytics Before AI
+
+The behavioural analytics engine is the source of truth.
+
+The LLM must receive structured behavioural findings rather than raw transaction history.
+
+Example:
+
+```json
+{
+  "type": "FOMO_PURCHASE",
+  "ticker": "CBXT",
+  "severity": "HIGH",
+  "evidence": {
+    "recentReturn": 0.22,
+    "rangePosition": 0.96
+  }
+}
+```
+
+The LLM may explain this finding but may not create additional financial conclusions unsupported by the analytics.
+
+---
+
+## 6.2 Explainability
+
+Every score must be traceable to measurable evidence.
+
+Users should be able to understand:
+
+* what triggered the score,
+* which transactions contributed,
+* how the score was calculated.
+
+The system should avoid unexplained AI-generated scores.
+
+---
+
+## 6.3 Behaviour, Not Investment Advice
+
+Portfolio Therapist analyses behaviour rather than recommending investment actions.
+
+It should not tell users:
+
+* what stock to buy,
+* what stock to sell,
+* whether a stock will increase or decrease,
+* which investment strategy guarantees better returns.
+
+Appropriate language:
+
+> "Possible concentration risk detected."
+
+Not:
+
+> "You should sell this stock."
+
+---
+
+## 6.4 Entertainment With Substance
+
+Humour should make insights more engaging without replacing meaningful analysis.
+
+Every Roast Mode output should have an equivalent Serious Mode explanation.
+
+---
+
+# 7. User Journey
+
+## 7.1 Main Cashbux Experience
+
+```text
+User logs in
+     ↓
+User trades normally
+     ↓
+Transactions are recorded
+     ↓
+User opens Portfolio Therapist
+     ↓
+Behaviour Analytics Engine analyses history
+     ↓
+Behaviour scores are generated
+     ↓
+Dashboard displays psychological profile
+     ↓
+User selects Roast or Serious Mode
+     ↓
+User explores evidence behind findings
+```
+
+---
+
+# 8. Portfolio Therapist Dashboard
+
+The feature should be accessible from the existing team navigation.
+
+Suggested navigation:
+
+```text
+Dashboard
+Market
+Company Details
+Portfolio
+Portfolio Therapist
+Trading History
+News
+Leaderboard
+Notifications
+Watchlist
+```
+
+Route:
+
+```text
+/team/therapist
+```
+
+---
+
+# 9. Main Dashboard Components
+
+## 9.1 Portfolio Mental State
+
+The system converts the overall behavioural score into an entertaining status.
+
+Possible states:
+
+| Score  | State               |
+| ------ | ------------------- |
+| 0–20   | Zen Investor        |
+| 21–40  | Mildly Questionable |
+| 41–60  | Concerned           |
+| 61–80  | Denial              |
+| 81–100 | Emotional Damage    |
+
+These names are primarily presentation labels and must not be treated as medical or psychological diagnoses.
+
+Example:
+
+```text
+CURRENT PORTFOLIO STATE
+
+DENIAL
+
+Behaviour Score: 72 / 100
+```
+
+---
+
+# 10. Behaviour Scores
+
+The MVP should initially contain four main detectors.
+
+## 10.1 FOMO Detector
+
+### Purpose
+
+Identify purchases made shortly after rapid upward price movement.
+
+### Inputs
+
+* User BUY transactions
+* Historical price data
+* Recent price changes
+* Recent high and low prices
+
+### Example Metrics
+
+```text
+recent_return =
+buy_price / earlier_price - 1
+```
+
+Recent range position:
+
+```text
+(buy_price - recent_low)
+/
+(recent_high - recent_low)
+```
+
+### Example Trigger
+
+A transaction may contribute to the FOMO score if:
+
+* recent price appreciation exceeds a defined threshold,
+* the purchase occurs close to the recent high.
+
+### Example Evidence
+
+```text
+CBXT
+
+Purchase price: $122
+Recent reference price: $100
+Recent increase: +22%
+Position within recent range: 96%
+```
+
+### Roast Example
+
+> You waited for the stock to go up 22% before deciding this was finally your moment.
+
+### Serious Example
+
+> This purchase occurred after a strong recent price increase and near the upper end of its recent trading range, which may indicate performance-chasing behaviour.
+
+---
+
+# 11. Averaging-Down / Commitment Escalation Detector
+
+### Purpose
+
+Detect repeated increases in a position while the purchase price continues to decline.
+
+The system must not assume that averaging down is automatically irrational.
+
+It should describe the detected pattern as:
+
+> Possible averaging-down or commitment-escalation behaviour.
+
+### Example Sequence
+
+```text
+BUY @ $120
+BUY @ $105
+BUY @ $91
+BUY @ $82
+```
+
+### Metrics
+
+* Number of repeated purchases
+* Price of each purchase
+* Average cost before each additional purchase
+* Current exposure
+* Current unrealised return
+
+### Example Roast
+
+> You haven't changed your thesis. You've simply changed the price you're willing to be wrong at.
+
+### Serious Explanation
+
+> The position was increased multiple times while its market price declined. Averaging down may be intentional, so the system identifies the behaviour without determining whether the strategy was correct.
+
+---
+
+# 12. Concentration Detector
+
+### Purpose
+
+Measure whether portfolio exposure is disproportionately concentrated within:
+
+* one security,
+* one sector,
+* a small number of holdings.
+
+### Metrics
+
+Holding weight:
+
+```text
+holding_value
+/
+total_portfolio_value
+```
+
+Sector exposure:
+
+```text
+sector_value
+/
+total_portfolio_value
+```
+
+Optional HHI:
+
+```text
+HHI = Σ(weight²)
+```
+
+### Example
+
+```text
+CBXT              38%
+Technology        78%
+Other sectors     22%
+```
+
+### Roast Example
+
+> You own seven companies, but Technology still somehow became the main character.
+
+### Serious Explanation
+
+> 78% of portfolio value is exposed to the Technology sector. Although several securities are held, their underlying sector exposure remains highly concentrated.
+
+---
+
+# 13. Overtrading Detector
+
+### Purpose
+
+Identify unusually high trading activity.
+
+### Metrics
+
+* Total trades
+* Trades per hour
+* Median time between trades
+* Portfolio turnover
+* Repeated buy-sell-rebuy behaviour
+
+### Example
+
+```text
+Trades                  37
+Session duration        42 minutes
+Trades per hour         52.9
+Median time between     54 seconds
+```
+
+### Roast Example
+
+> Your long-term strategy has survived approximately 54 seconds at a time.
+
+### Serious Explanation
+
+> Trading frequency is high relative to the duration of the session. Frequent trading does not necessarily indicate poor decision-making but may reflect a highly reactive strategy.
+
+---
+
+# 14. Loss Aversion Detector
+
+### Priority
+
+Post-MVP / stretch feature.
+
+### Purpose
+
+Determine whether the user tends to realise winning trades quickly while holding losing positions significantly longer.
+
+### Possible Metrics
+
+```text
+Average holding period — profitable trades
+
+versus
+
+Average holding period — losing trades
+```
+
+Possible ratio:
+
+```text
+loss_aversion_ratio =
+avg_loser_holding_period
+/
+avg_winner_holding_period
+```
+
+Trade matching should use a clearly defined methodology such as FIFO.
+
+---
+
+# 15. Scoring System
+
+Each behavioural detector should return a score from:
+
+```text
+0 – 100
+```
+
+Scores must be calculated deterministically.
+
+Example FOMO breakdown:
+
+```text
+Bought after >15% recent rally
+3 occurrences × 15 points      = 45
+
+Bought in top 10% recent range
+2 occurrences × 15 points      = 30
+
+Repeated pattern bonus          = 7
+
+TOTAL                           = 82
+```
+
+Scores should be capped at 100.
+
+The frontend should expose this breakdown through a:
+
+```text
+Show Evidence
+```
+
+option.
+
+---
+
+# 16. Overall Behaviour Score
+
+Individual behaviour scores may be combined into an overall score.
+
+Initial implementation:
+
+```text
+Overall Score =
+average of available detector scores
+```
+
+Future versions may introduce weighted scoring.
+
+Example:
+
+```text
+FOMO                 78
+Averaging Down       65
+Concentration        91
+Overtrading          44
+
+Overall              69.5
+```
+
+Portfolio Mental State:
+
+```text
+DENIAL
+```
+
+---
+
+# 17. Roast Mode
+
+Roast Mode presents analytics using humorous language.
+
+Requirements:
+
+* Must only reference detected evidence.
+* Must not invent user behaviour.
+* Must not contain investment recommendations.
+* Should remain concise.
+* Should avoid genuine psychological or medical diagnoses.
+
+Example:
+
+> You built an entire portfolio and somehow recreated one technology ETF with extra steps.
+
+---
+
+# 18. Serious Mode
+
+Serious Mode explains the same finding neutrally.
+
+Example:
+
+> 78% of the portfolio is exposed to technology-related securities. Holding multiple securities therefore does not necessarily provide meaningful sector diversification.
+
+The user should be able to toggle:
+
+```text
+🔥 Roast Me
+
+🧠 Explain Seriously
+```
+
+---
+
+# 19. LLM Integration
+
+The LLM is responsible only for communication.
+
+### Input
+
+Structured JSON generated by the analytics engine.
+
+Example:
+
+```json
+{
+  "scores": {
+    "fomo": 78,
+    "concentration": 91
+  },
+  "findings": [
+    {
+      "type": "FOMO_PURCHASE",
+      "ticker": "CBXT",
+      "evidence": {
+        "recentReturn": 0.22,
+        "rangePosition": 0.96
+      }
+    }
+  ]
+}
+```
+
+### System Prompt Requirements
+
+The model should be instructed:
+
+```text
+You are Portfolio Therapist.
+
+Use ONLY the supplied behavioural findings.
+
+Do not recommend buying or selling securities.
+
+Do not determine whether an investment is good or bad.
+
+Do not invent investor behaviour.
+
+Provide:
+
+1. Roast Mode
+2. Serious Mode
+```
+
+---
+
+# 20. Investment Intervention
+
+### Priority
+
+High-value stretch feature after the main dashboard.
+
+Before confirming a BUY transaction, Portfolio Therapist analyses the hypothetical resulting portfolio.
+
+Example:
+
+```text
+USER ATTEMPTS:
+
+BUY 500 CBXT
+```
+
+System evaluates:
+
+```text
+Current CBXT exposure:    31%
+Exposure after purchase:  46%
+Recent CBXT return:       +18%
+Previous purchases:       3
+```
+
+Display:
+
+```text
+PORTFOLIO THERAPIST INTERVENTION
+
+You're about to buy another 500 CBXT.
+
+CBXT currently represents 31% of your portfolio.
+After this trade it would represent 46%.
+
+CBXT has recently risen 18%.
+You have already purchased it three times.
+```
+
+The system then asks:
+
+```text
+Why are you buying?
+
+○ New information
+○ Portfolio strategy
+○ Valuation changed
+○ It went up
+○ Someone told me to
+○ Vibes
+```
+
+If the user chooses:
+
+```text
+Vibes
+```
+
+the application may display:
+
+```text
+SESSION COMPLETE.
+
+WE FOUND THE PROBLEM.
+```
+
+The intervention must remain informational and must not prevent the user from executing the trade.
+
+---
+
+# 21. Data Sources
+
+Portfolio Therapist should primarily reuse existing Cashbux data.
+
+### Existing Tables
+
+#### `transactions`
+
+Required fields:
+
+```text
+id
+team_id
+company_id
+action
+quantity
+price
+created_at
+```
+
+#### `holdings`
+
+```text
+team_id
+company_id
+quantity
+avg_price
+```
+
+#### `companies`
+
+Used for:
+
+```text
+ticker
+company name
+sector
+industry
+current price
+```
+
+#### `stock_price_history`
+
+Used for detecting price behaviour before transactions.
+
+```text
+company_id
+price
+created_at
+```
+
+---
+
+# 22. Source of Truth
+
+Behaviour analytics should reconstruct important values directly from transaction history where practical.
+
+This is especially important for:
+
+* average cost,
+* historical position size,
+* repeated buying behaviour,
+* realised trading behaviour.
+
+`transactions` should therefore act as the primary source of truth for behavioural analysis.
+
+---
+
+# 23. Backend Architecture
+
+Suggested structure:
+
+```text
+server/src/
+
+therapist/
+├── types.ts
+├── engine.ts
+├── scoring.ts
+│
+├── detectors/
+│   ├── fomo.ts
+│   ├── averagingDown.ts
+│   ├── concentration.ts
+│   ├── overtrading.ts
+│   └── lossAversion.ts
+│
+└── llm.ts
+
+therapistRoutes.ts
+```
+
+The analytics code should remain separated from:
+
+* API routing,
+* LLM generation,
+* UI logic.
+
+---
+
+# 24. API Requirements
+
+## Main Therapist Endpoint
+
+```http
+GET /api/therapist/me
+```
+
+Example response:
+
+```json
+{
+  "scores": {
+    "fomo": 78,
+    "averagingDown": 65,
+    "concentration": 91,
+    "overtrading": 44
+  },
+  "overall": {
+    "score": 70,
+    "state": "DENIAL"
+  },
+  "findings": []
+}
+```
+
+---
+
+## Investment Intervention Endpoint
+
+```http
+POST /api/therapist/intervention
+```
+
+Example request:
+
+```json
+{
+  "companyId": 5,
+  "quantity": 500
+}
+```
+
+Example response:
+
+```json
+{
+  "currentExposure": 0.31,
+  "projectedExposure": 0.46,
+  "recentReturn": 0.18,
+  "previousPurchases": 3,
+  "warnings": [
+    "HIGH_CONCENTRATION",
+    "RECENT_PRICE_INCREASE"
+  ]
+}
+```
+
+---
+
+# 25. Frontend Requirements
+
+Route:
+
+```text
+/team/therapist
+```
+
+Main components:
+
+```text
+TherapistDashboard
+MentalStateCard
+BehaviourScoreCard
+FindingCard
+EvidencePanel
+ModeToggle
+PortfolioExposureChart
+```
+
+Example layout:
+
+```text
+┌────────────────────────────────────────┐
+│          PORTFOLIO THERAPIST           │
+│                                        │
+│               DENIAL                   │
+│              72 / 100                  │
+├────────────────────────────────────────┤
+│ FOMO               ████████░░  78     │
+│ Averaging Down     ███████░░░  65     │
+│ Concentration      █████████░  91     │
+│ Overtrading        ████░░░░░░  44     │
+├────────────────────────────────────────┤
+│                                        │
+│      Roast Me | Explain Seriously      │
+│                                        │
+├────────────────────────────────────────┤
+│ Recent Findings                        │
+│                                        │
+│ CBXT — FOMO purchase                   │
+│ Technology — 78% exposure              │
+│                                        │
+└────────────────────────────────────────┘
+```
+
+---
+
+# 26. MVP Scope
+
+The hackathon MVP should include:
+
+* Integration into Cashbux
+* Existing user transaction analysis
+* FOMO detector
+* Averaging-down detector
+* Concentration detector
+* Overtrading detector
+* 0–100 scoring
+* Overall Mental State
+* Evidence for findings
+* Roast Mode
+* Serious Mode
+* Portfolio Therapist dashboard
+
+---
+
+# 27. Stretch Goals
+
+If development time remains:
+
+1. LLM-generated roasts
+2. Investment Intervention
+3. Loss-aversion detector
+4. Panic-selling detector
+5. Revenge-trading detector
+6. Strategy consistency analysis
+7. CSV portfolio upload
+8. Historical behavioural trends
+9. Shareable Portfolio Therapist report
+10. Comparison between teams
+
+---
+
+# 28. Out of Scope for MVP
+
+The following should not be prioritised:
+
+* Real brokerage connections
+* Executing real trades
+* Stock-price prediction
+* Portfolio optimisation
+* Automated buy/sell recommendations
+* Personalised financial advice
+* Real-time brokerage APIs
+* Full financial-planning functionality
+
+---
+
+# 29. Success Metrics
+
+For the hackathon prototype, success should be measured by whether:
+
+### Functional
+
+* User transactions can be analysed automatically.
+* Behaviour scores respond correctly to transaction patterns.
+* Evidence can be shown for every major finding.
+* Therapist dashboard loads using current Cashbux data.
+* Roast/Serious modes display different explanations.
+
+### User Experience
+
+A user should understand within approximately 10 seconds:
+
+1. which behaviours were detected,
+2. why they were detected,
+3. which transactions caused them.
+
+### Demo Impact
+
+The product should produce at least one memorable moment where a user's stated strategy conflicts with measurable trading behaviour.
+
+Example:
+
+```text
+"I'm a disciplined long-term investor."
+
+↓ Portfolio Therapist
+
+FOMO                 91
+Overtrading          83
+Concentration        76
+
+THERAPIST:
+
+"Your stated strategy and transaction history
+have never met."
+```
+
+---
+
+# 30. Risks and Mitigations
+
+## Incorrect Behavioural Conclusions
+
+**Risk:**
+A detected pattern may have a rational explanation.
+
+**Mitigation:**
+Describe behaviours as patterns rather than definitive psychological conclusions.
+
+Use:
+
+> "Possible commitment-escalation behaviour."
+
+Instead of:
+
+> "You suffer from sunk-cost bias."
+
+---
+
+## Arbitrary Scores
+
+**Risk:**
+Judges may question why a user received a specific score.
+
+**Mitigation:**
+Every score must have an inspectable scoring breakdown.
+
+---
+
+## LLM Hallucination
+
+**Risk:**
+The LLM may invent reasons for investor behaviour.
+
+**Mitigation:**
+Provide only structured analytics evidence and explicitly prohibit unsupported conclusions.
+
+---
+
+## Limited Trading History
+
+**Risk:**
+Users may have too few transactions for meaningful analysis.
+
+**Mitigation:**
+Display:
+
+> "Not enough trading history to evaluate this behaviour yet."
+
+rather than assigning a misleading score.
+
+---
+
+# 31. Hackathon Demo Flow
+
+Recommended presentation flow:
+
+### Step 1
+
+Introduce a user who claims:
+
+> "I'm a disciplined long-term investor."
+
+### Step 2
+
+Show several trades within Cashbux.
+
+### Step 3
+
+Open:
+
+```text
+Portfolio → Portfolio Therapist
+```
+
+### Step 4
+
+Reveal:
+
+```text
+PORTFOLIO PSYCHOLOGICAL PROFILE
+
+FOMO                 91
+Concentration        76
+Averaging Down       83
+Overtrading          71
+```
+
+### Step 5
+
+Show evidence.
+
+Example:
+
+```text
+CBXT
+
+Bought after:        +22% rally
+Range position:      96%
+Previous purchases:  3
+Portfolio exposure:  34%
+```
+
+### Step 6
+
+Press:
+
+```text
+ROAST ME
+```
+
+Output:
+
+> Your stated strategy and your transaction history appear to be in a long-distance relationship.
+
+### Step 7
+
+Switch to:
+
+```text
+EXPLAIN SERIOUSLY
+```
+
+Demonstrate that the same findings have legitimate behavioural-finance explanations.
+
+### Step 8
+
+Optional finale:
+
+Attempt another concentrated purchase.
+
+Portfolio Therapist Intervention appears.
+
+Select:
+
+```text
+Why are you buying?
+
+● Vibes
+```
+
+Display:
+
+# SESSION COMPLETE
+
+## WE FOUND THE PROBLEM.
+
+---
+
+# 32. Product Vision
+
+Portfolio Therapist should evolve from a funny hackathon feature into an explainable behavioural-finance layer that can sit above any transaction history.
+
+The long-term architecture is:
+
+```text
+                    PORTFOLIO THERAPIST
+                            │
+             ┌──────────────┴──────────────┐
+             │                             │
+      CASHBUX SIMULATION            EXTERNAL PORTFOLIO
+             │                             │
+     Existing transactions             CSV / API
+             │                             │
+             └──────────────┬──────────────┘
+                            │
+                            ▼
+                  Behaviour Analytics
+                            │
+                            ▼
+                   Structured Evidence
+                            │
+                ┌───────────┴───────────┐
+                │                       │
+             Serious                  Roast
+             Mode                     Mode
+```
+
+The product's central philosophy remains:
+
+> **Don't ask AI whether someone is a bad investor. Measure their behaviour first, then let AI explain what the numbers already show.**
