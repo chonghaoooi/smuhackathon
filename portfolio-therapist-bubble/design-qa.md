@@ -4,9 +4,9 @@
 - Implementation screenshot: `implementation-1440x1024.png`
 - Responsive screenshot: `implementation-mobile-390x844.png`
 - Combined comparison: `design-comparison.png`
-- Source pixels: 1536 Ã— 1024
-- Implementation pixels / CSS viewport: 1440 Ã— 1024 at device scale 1
-- Responsive viewport: 390 Ã— 844 at device scale 1
+- Source pixels: 1536 × 1024
+- Implementation pixels / CSS viewport: 1440 × 1024 at device scale 1
+- Responsive viewport: 390 × 844 at device scale 1
 - Density normalization: both desktop images are 1024 px high and were placed unscaled side by side; the source's additional 96 px of width was retained.
 - State: initial centred bubble, speech visible, idle animation active
 
@@ -16,7 +16,7 @@ The combined comparison preserves the source's near-black canvas, cobalt/violet 
 
 ## Focused region comparison evidence
 
-No extra focused crop was needed: the character face, mouth symbols, speech copy, outline, highlight, and status label are all clearly readable at native resolution in the full-height comparison. The separate 390 Ã— 844 capture verifies the small-screen character treatment and speech placement.
+No extra focused crop was needed: the character face, mouth symbols, speech copy, outline, highlight, and status label are all clearly readable at native resolution in the full-height comparison. The separate 390 × 844 capture verifies the small-screen character treatment and speech placement.
 
 ## Findings
 
@@ -46,4 +46,3 @@ No extra focused crop was needed: the character face, mouth symbols, speech copy
 - P3: the synthetic orb is cleaner and less particulate than the generated reference; this is acceptable for a lightweight interactive HTML prototype.
 
 final result: passed
-

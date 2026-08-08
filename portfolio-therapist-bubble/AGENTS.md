@@ -15,4 +15,3 @@ When implementing from a selected generated mock, treat that image as the source
 - Emotion controls should change the comma-eye expression and animate new dialogue; include a short simulated conversation.
 
 Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
-

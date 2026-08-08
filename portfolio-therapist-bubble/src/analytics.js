@@ -71,7 +71,7 @@ export function analysePortfolio(portfolio = demoPortfolio) {
       label: "FOMO buying",
       score: fomoScore,
       tone: "hot",
-      summary: `${fomoEvents.length} purchase${fomoEvents.length === 1 ? "" : "s"} followed a â‰¥15% rally near the recent high.`,
+      summary: `${fomoEvents.length} purchase${fomoEvents.length === 1 ? "" : "s"} followed a ≥15% rally near the recent high.`,
       roast: `You waited for ${fomoEvents[0]?.ticker || "the stock"} to sprint uphill before deciding it looked approachable.`,
       serious: "These purchases followed strong recent gains and occurred near the top of their recent ranges, a pattern consistent with performance chasing.",
       evidence: fomoEvents.length ? [
@@ -79,7 +79,7 @@ export function analysePortfolio(portfolio = demoPortfolio) {
         `Recent increase +${(fomoEvents[0].recentReturn * 100).toFixed(0)}%`,
         `Range position ${(fomoEvents[0].rangePosition * 100).toFixed(0)}%`,
       ] : ["No qualifying purchases detected"],
-      breakdown: `${fomoEvents.length} trigger Ã— 38 points`,
+      breakdown: `${fomoEvents.length} trigger × 38 points`,
     },
     {
       id: "averagingDown",
@@ -91,7 +91,7 @@ export function analysePortfolio(portfolio = demoPortfolio) {
       serious: "The position was increased multiple times while its price declined. This may be intentional; the detector identifies the pattern without judging the strategy.",
       evidence: decliningSequences.length ? [
         `${decliningSequences[0].ticker} repeated purchases`,
-        decliningSequences[0].prices.map((price) => `$${price}`).join(" â†’ "),
+        decliningSequences[0].prices.map((price) => `$${price}`).join(" → "),
         `${longestSequence} declining entries`,
       ] : ["No declining purchase sequence detected"],
       breakdown: `35 base + ${Math.max(0, longestSequence - 2)} repeat bonus`,
@@ -131,4 +131,3 @@ export function analysePortfolio(portfolio = demoPortfolio) {
   const score = Math.round(findings.reduce((sum, finding) => sum + finding.score, 0) / findings.length);
   return { owner: portfolio.owner, score, state: getState(score), findings };
 }
-

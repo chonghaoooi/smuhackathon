@@ -145,7 +145,7 @@ export function App() {
     <main className="app-shell">
       <nav className="topbar" aria-label="Primary navigation">
         <a className="brand" href="/team/therapist" aria-label="Portfolio Therapist home"><span className="brand-orb" />PORTFOLIO THERAPIST</a>
-        <span className="demo-pill"><i /> LIVE DEMO Â· {analysis.owner.toUpperCase()}</span>
+        <span className="demo-pill"><i /> LIVE DEMO · {analysis.owner.toUpperCase()}</span>
       </nav>
 
       <section className="hero" ref={stageRef}>
@@ -154,9 +154,9 @@ export function App() {
           <h1>Your strategy says<br />long-term. Your <em>trades</em><br />say otherwise.</h1>
           <p>We measure your investing behaviour first. Then the AI explains what the numbers already know.</p>
           <button className="demo-cta" type="button" onClick={playDemo} disabled={playing}>
-            <span>{playing ? "Running analysisâ€¦" : "Play judge demo"}</span><b>â†’</b>
+            <span>{playing ? "Running analysis…" : "Play judge demo"}</span><b>→</b>
           </button>
-          <span className="disclaimer">Behavioural patterns only Â· Not investment advice</span>
+          <span className="disclaimer">Behavioural patterns only · Not investment advice</span>
         </div>
 
         <div className="orb-stage">
@@ -177,14 +177,14 @@ export function App() {
               <div className="speech-head">
                 <span>PORTFOLIO THERAPIST</span>
                 <button type="button" className="voice-button" onClick={(event) => { event.stopPropagation(); speak(); }} aria-label={voiceState === "playing" ? "Stop voice" : "Read insight aloud"}>
-                  {voiceState === "loading" ? "Â·Â·Â·" : voiceState === "playing" ? "â– " : "â™ª"}
+                  {voiceState === "loading" ? "···" : voiceState === "playing" ? "■" : "♪"}
                 </button>
               </div>
               {typing ? <span className="typing-dots" aria-label="Typing"><i /><i /><i /></span> : <p key={`${activeId}-${mode}-${displayedCopy}`}>{displayedCopy}</p>}
             </div>
             <div className="orb" aria-hidden="true"><span className="shine" /><div className="eyes"><span>,</span><span>,</span></div></div>
           </div>
-          <span className="drag-hint">â†” DRAG ME AROUND</span>
+          <span className="drag-hint">↔ DRAG ME AROUND</span>
         </div>
       </section>
 
@@ -198,7 +198,7 @@ export function App() {
         </div>
 
         <div className="mode-toggle" role="group" aria-label="Explanation style">
-          <button type="button" className={mode === "roast" ? "active" : ""} onClick={() => changeMode("roast")}>ðŸ”¥ Roast me</button>
+          <button type="button" className={mode === "roast" ? "active" : ""} onClick={() => changeMode("roast")}>🔥 Roast me</button>
           <button type="button" className={mode === "serious" ? "active" : ""} onClick={() => changeMode("serious")}>Explain seriously</button>
         </div>
 
@@ -217,7 +217,7 @@ export function App() {
           <div className="finding-title"><span className={`score-dot ${activeFinding.tone}`} /><div><small>DETECTED PATTERN</small><h3>{activeFinding.label}</h3></div><strong>{activeFinding.score}</strong></div>
           <p>{activeFinding.summary}</p>
           <button className="evidence-toggle" type="button" onClick={() => setEvidenceOpen((open) => !open)} aria-expanded={evidenceOpen}>
-            {evidenceOpen ? "Hide evidence" : "Show evidence"}<span>{evidenceOpen ? "âˆ’" : "+"}</span>
+            {evidenceOpen ? "Hide evidence" : "Show evidence"}<span>{evidenceOpen ? "−" : "+"}</span>
           </button>
           {evidenceOpen && (
             <div className="evidence-grid">
@@ -230,4 +230,3 @@ export function App() {
     </main>
   );
 }
-

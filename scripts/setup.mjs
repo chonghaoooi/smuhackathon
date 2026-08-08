@@ -10,9 +10,8 @@ for (const folder of folders) fs.mkdirSync(path.join(root, folder), { recursive:
 const nodeCheck = spawnSync('node', ['-v'], { stdio: 'inherit', shell: true });
 if (nodeCheck.status !== 0) process.exit(nodeCheck.status ?? 1);
 
-const nodeExe = 'C:\\Users\\amarn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe';
-const pnpmCli = 'C:\\Users\\amarn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\node_modules\\pnpm\\bin\\pnpm.mjs';
-const env = { ...process.env, PATH: `C:\\Users\\amarn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin;${process.env.PATH ?? ''}` };
-spawnSync(nodeExe, [pnpmCli, 'install'], { cwd: root, stdio: 'inherit', env });
-spawnSync(nodeExe, [pnpmCli, '--filter', './server', 'migrate'], { cwd: root, stdio: 'inherit', env });
-spawnSync(nodeExe, [pnpmCli, '--filter', './server', 'seed'], { cwd: root, stdio: 'inherit', env });
+const pnpm = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+for (const args of [['install'], ['--filter', './server', 'migrate'], ['--filter', './server', 'seed']]) {
+  const result = spawnSync(pnpm, args, { cwd: root, stdio: 'inherit', shell: process.platform === 'win32' });
+  if (result.status !== 0) process.exit(result.status ?? 1);
+}

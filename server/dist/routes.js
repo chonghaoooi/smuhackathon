@@ -1004,6 +1004,29 @@ export function createApi(io) {
     router.get('/admin/notifications', requireRole('admin'), (_req, res) => {
         res.json({ notifications: db.prepare('SELECT * FROM notifications ORDER BY created_at DESC').all() });
     });
+    router.post('/therapist/explain', requireRole('team'), async (req, res) => {
+        const { mode, finding } = req.body;
+        if (!config.geminiApiKey)
+            return res.status(503).json({ error: 'AI explanation is not configured' });
+        const safeFinding = { label: finding?.label, score: finding?.score, evidence: finding?.evidence };
+        const prompt = `You are Portfolio Therapist. Use ONLY this finding: ${JSON.stringify(safeFinding)}. Write one concise ${mode === 'serious' ? 'neutral explanation' : 'witty roast'}. Do not invent facts, diagnose, judge investments, or recommend buying or selling. Return only the explanation under 45 words.`;
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(config.geminiApiKey)}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 100 } }) });
+        if (!response.ok)
+            return res.status(502).json({ error: 'AI explanation failed' });
+        const data = await response.json();
+        res.json({ text: data.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('').trim() });
+    });
+    router.post('/therapist/speak', requireRole('team'), async (req, res) => {
+        const text = String(req.body?.text ?? '').trim();
+        if (!config.elevenLabsApiKey)
+            return res.status(503).json({ error: 'Voice is not configured' });
+        if (!text || text.length > 800)
+            return res.status(400).json({ error: 'Invalid text' });
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${config.elevenLabsVoiceId}`, { method: 'POST', headers: { 'content-type': 'application/json', 'xi-api-key': config.elevenLabsApiKey, accept: 'audio/mpeg' }, body: JSON.stringify({ text, model_id: 'eleven_multilingual_v2' }) });
+        if (!response.ok)
+            return res.status(502).json({ error: 'Voice generation failed' });
+        res.type('audio/mpeg').send(Buffer.from(await response.arrayBuffer()));
+    });
     return router;
 }
 function firstNonInternalIp() {

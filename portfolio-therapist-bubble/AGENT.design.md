@@ -1,4 +1,4 @@
-# Portfolio Therapist â€” Ambient Bubble Design
+# Portfolio Therapist — Ambient Bubble Design
 
 ## Purpose
 
@@ -13,7 +13,7 @@ The character provides personality and conversation. Portfolio analytics remain 
 - No mouth, symbol string, emoji, or `LISTENING` status.
 - The orb softly breathes and changes colour with its emotion.
 - The default diameter is `180px`.
-- The adjustable diameter range is `120pxâ€“280px`.
+- The adjustable diameter range is `120px–280px`.
 - The speech bubble travels with the orb.
 
 ## Visual Direction
@@ -33,24 +33,24 @@ All emotions retain comma eyes. Expression comes from the comma positions, tilt,
 
 - Eyes lean gently inward.
 - Colour treatment is cool and slightly desaturated.
-- Example dialogue: â€œYour portfolio is unusually quiet today. I am suspicious, but impressed.â€
+- Example dialogue: “Your portfolio is unusually quiet today. I am suspicious, but impressed.”
 
 ### Curious
 
 - One eye sits slightly higher than the other.
 - Standard electric-blue colour treatment.
-- Example dialogue: â€œInteresting. What made this trade feel different from the last three?â€
+- Example dialogue: “Interesting. What made this trade feel different from the last three?”
 
 ### Concerned
 
 - Eyes tilt inward more strongly.
 - Warm amber highlights appear in the face.
-- Example dialogue: â€œYou added to the same position again. Let us look at the pattern first.â€
+- Example dialogue: “You added to the same position again. Let us look at the pattern first.”
 
 ### Roast
 
 - Eyes tilt outward with a brighter magenta treatment.
-- Example dialogue: â€œYour long-term strategy has survived approximately forty-seven seconds.â€
+- Example dialogue: “Your long-term strategy has survived approximately forty-seven seconds.”
 
 ## Controls
 
@@ -63,10 +63,10 @@ All emotions retain comma eyes. Expression comes from the comma positions, tilt,
 
 The demo sequence is intentionally short:
 
-1. **You:** â€œI only make long-term trades.â€
-2. **Portfolio Therapist:** â€œYou made fourteen trades in thirty minutes.â€
-3. **You:** â€œThat was research.â€
-4. **Portfolio Therapist:** â€œOf course. Very fast research.â€
+1. **You:** “I only make long-term trades.”
+2. **Portfolio Therapist:** “You made fourteen trades in thirty minutes.”
+3. **You:** “That was research.”
+4. **Portfolio Therapist:** “Of course. Very fast research.”
 
 Each line triggers the matching eye expression and speech animation.
 
@@ -91,7 +91,7 @@ Each line triggers the matching eye expression and speech animation.
 - Desktop: speech sits to the upper-right of the orb.
 - Small screens: speech overlaps the upper-right edge without hiding both eyes.
 - Controls remain fixed near the bottom and wrap when necessary.
-- The page must not introduce horizontal or vertical overflow at `390 Ã— 844`.
+- The page must not introduce horizontal or vertical overflow at `390 × 844`.
 
 ## Accessibility
 
@@ -104,10 +104,10 @@ Each line triggers the matching eye expression and speech animation.
 
 ## Implementation Files
 
-- `src/App.jsx` â€” drag logic, size state, emotion selection, and simulated conversation.
-- `src/styles.css` â€” orb appearance, expressions, responsive layout, and animation.
-- `AGENTS.md` â€” durable prototype constraints.
-- `design-qa.md` â€” visual and interaction verification notes.
+- `src/App.jsx` — drag logic, size state, emotion selection, and simulated conversation.
+- `src/styles.css` — orb appearance, expressions, responsive layout, and animation.
+- `AGENTS.md` — durable prototype constraints.
+- `design-qa.md` — visual and interaction verification notes.
 
 ## Product Guardrails
 
@@ -115,4 +115,3 @@ Each line triggers the matching eye expression and speech animation.
 - Do not recommend buying or selling securities.
 - Do not label the user with a medical or psychological diagnosis.
 - Roast and serious explanations should remain traceable to the same evidence.
-

@@ -1,11 +1,10 @@
 import os from 'node:os';
 import { exec, spawn } from 'node:child_process';
 
-const nodeExe = 'C:\\Users\\amarn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe';
-const pnpmCli = 'C:\\Users\\amarn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\node_modules\\pnpm\\bin\\pnpm.mjs';
-const env = { ...process.env, PATH: `C:\\Users\\amarn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin;${process.env.PATH ?? ''}` };
-const backend = spawn(nodeExe, [pnpmCli, '--filter', './server', 'dev'], { env, stdio: 'inherit' });
-const frontend = spawn(nodeExe, [pnpmCli, '--filter', './client', 'dev'], { env, stdio: 'inherit' });
+const pnpm = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+const spawnOptions = { stdio: 'inherit', shell: process.platform === 'win32' };
+const backend = spawn(pnpm, ['--filter', './server', 'dev'], spawnOptions);
+const frontend = spawn(pnpm, ['--filter', './client', 'dev'], spawnOptions);
 const localUrl = `http://${getIp()}:3000`;
 
 function getIp() {

@@ -22,4 +22,3 @@ test("does not invent fomo when rally thresholds are absent", () => {
   const fomo = analysePortfolio(portfolio).findings.find((finding) => finding.id === "fomo");
   assert.equal(fomo.score, 0);
 });
-
