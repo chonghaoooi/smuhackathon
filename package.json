@@ -1,0 +1,21 @@
+{
+  "name": "cashbux-market-sim",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -k \"pnpm --filter ./server dev\" \"pnpm --filter ./client dev\"",
+    "build": "pnpm --filter ./server build && pnpm --filter ./client build",
+    "setup": "node scripts/setup.mjs",
+    "backup": "node scripts/backup.mjs",
+    "restore": "node scripts/restore.mjs",
+    "start": "node scripts/start-server.mjs",
+    "health-check": "node scripts/health-check.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
