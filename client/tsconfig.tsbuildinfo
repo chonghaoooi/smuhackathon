@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/therapist/character.tsx","./src/therapist/findingdetail.tsx","./src/therapist/modetoggle.tsx","./src/therapist/portfolioexposurechart.tsx","./src/therapist/scorerow.tsx","./src/therapist/therapistpage.tsx","./src/therapist/types.ts"],"version":"5.9.3"}

@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { io, type Socket } from 'socket.io-client';
+import { TherapistPage } from './therapist/TherapistPage';
 
 type Company = { id: string; name: string; ticker: string; industry: string; description: string; sector: string; price: number; volume: number; revenue: number; profit: number; debt: number; dividend_yield: number };
 type CompanyProfile = { hq?: string; founded?: string; ceo?: string; focus?: string; scenario?: string; news?: string };
@@ -118,7 +119,7 @@ const EMPTY_ADMIN_OVERVIEW = {
   backups: [] as Array<Record<string, any>>
 };
 
-async function apiGet<T>(path: string, token?: string): Promise<T> {
+export async function apiGet<T>(path: string, token?: string): Promise<T> {
   const res = await fetch(`${apiBase}${path}`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
@@ -164,7 +165,7 @@ function useAuth() {
   return { token, role, userId, login, logout };
 }
 
-function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return <section className={`card ${className}`}>{children}</section>;
 }
 
@@ -172,7 +173,7 @@ function StatGrid({ items }: { items: Array<{ label: string; value: string | num
   return <div className="stat-grid">{items.map((item) => <Card key={item.label}><div className="muted">{item.label}</div><div className="stat">{item.value}</div></Card>)}</div>;
 }
 
-function DataTable({ columns, rows }: { columns: string[]; rows: Array<Record<string, any>> }) {
+export function DataTable({ columns, rows }: { columns: string[]; rows: Array<Record<string, any>> }) {
   return <div className="table-wrap"><table className="data-table"><thead><tr>{columns.map((column) => <th key={column}>{column}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{columns.map((column) => <td key={column}>{renderCell(row[column])}</td>)}</tr>)}</tbody></table></div>;
 }
 
@@ -271,11 +272,11 @@ function logKind(action: string) {
   return 'General';
 }
 
-function EmptyState({ title, text }: { title: string; text: string }) {
+export function EmptyState({ title, text }: { title: string; text: string }) {
   return <Card><h3>{title}</h3><p className="muted">{text}</p></Card>;
 }
 
-function PageIntro({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
+export function PageIntro({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
   return (
     <Card className="hero-card">
       <div className="eyebrow">{eyebrow}</div>
@@ -303,7 +304,7 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   );
 }
 
-function AppShell({ title, token, role, logout, connectionStatus, children }: { title: string; token: string; role: string; logout: () => void; connectionStatus?: string; children: React.ReactNode }) {
+export function AppShell({ title, token, role, logout, connectionStatus, children }: { title: string; token: string; role: string; logout: () => void; connectionStatus?: string; children: React.ReactNode }) {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [liveStatus, setLiveStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('connected');
@@ -372,6 +373,7 @@ function AppShell({ title, token, role, logout, connectionStatus, children }: { 
           <Link to="/team/market">Market</Link>
           <Link to="/team/company">Company Details</Link>
           <Link to="/team/portfolio">Portfolio</Link>
+          <Link to="/team/therapist">Portfolio Therapist</Link>
           <Link to="/team/history">Trading History</Link>
           <Link to="/team/news">News {badgeCounts.news ? <span className="menu-badge">{badgeCounts.news}</span> : null}</Link>
           <Link to="/team/leaderboard">Leaderboard</Link>
@@ -1103,6 +1105,6 @@ export default function AppRoutes() {
   if (firstRun) return <FirstRunWizard token={auth.token} done={() => setFirstRun(false)} />;
   const adminRedirect = <Navigate to="/team/dashboard" replace />;
   const adminOnly = (element: React.ReactNode) => (auth.role === 'admin' ? element : adminRedirect);
-  return <Routes><Route path="/" element={<Navigate to={auth.role === 'admin' ? '/admin' : '/team/dashboard'} replace />} /><Route path="/status" element={<StatusPage token={auth.token} role={auth.role} />} /><Route path="/team/dashboard" element={<TeamDashboard token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/market" element={<MarketPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/company" element={<CompanyDetailsPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/portfolio" element={<PortfolioPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/history" element={<HistoryPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/news" element={<NewsPage token={auth.token} role={auth.role} />} /><Route path="/team/leaderboard" element={<LeaderboardPage token={auth.token} role={auth.role} />} /><Route path="/team/notifications" element={<NotificationsPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/watchlist" element={<WatchlistPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/admin" element={adminOnly(<AdminPage token={auth.token} userId={auth.userId} />)} /><Route path="/admin/company" element={adminOnly(<CompanyDetailsPage token={auth.token} userId={auth.userId} role="admin" />)} /><Route path="/admin/teams" element={adminOnly(<TeamManagementPage token={auth.token} />)} /><Route path="/admin/companies" element={adminOnly(<CompanyManagementPage token={auth.token} />)} /><Route path="/admin/market" element={adminOnly(<MarketControlsPage token={auth.token} />)} /><Route path="/admin/news" element={adminOnly(<NewsManagementPage token={auth.token} />)} /><Route path="/admin/notifications" element={adminOnly(<NotificationManagementPage token={auth.token} />)} /><Route path="/admin/snapshots" element={adminOnly(<SnapshotManagementPage token={auth.token} />)} /><Route path="/admin/events" element={adminOnly(<EventLogsPage token={auth.token} />)} /><Route path="/admin/network" element={adminOnly(<NetworkPage token={auth.token} />)} /><Route path="/admin/backups" element={adminOnly(<BackupManagementPage token={auth.token} />)} /><Route path="*" element={<Navigate to="/" replace />} /></Routes>;
+  return <Routes><Route path="/" element={<Navigate to={auth.role === 'admin' ? '/admin' : '/team/dashboard'} replace />} /><Route path="/status" element={<StatusPage token={auth.token} role={auth.role} />} /><Route path="/team/dashboard" element={<TeamDashboard token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/market" element={<MarketPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/company" element={<CompanyDetailsPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/portfolio" element={<PortfolioPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/therapist" element={<TherapistPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/history" element={<HistoryPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/news" element={<NewsPage token={auth.token} role={auth.role} />} /><Route path="/team/leaderboard" element={<LeaderboardPage token={auth.token} role={auth.role} />} /><Route path="/team/notifications" element={<NotificationsPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/team/watchlist" element={<WatchlistPage token={auth.token} userId={auth.userId} role={auth.role} />} /><Route path="/admin" element={adminOnly(<AdminPage token={auth.token} userId={auth.userId} />)} /><Route path="/admin/company" element={adminOnly(<CompanyDetailsPage token={auth.token} userId={auth.userId} role="admin" />)} /><Route path="/admin/teams" element={adminOnly(<TeamManagementPage token={auth.token} />)} /><Route path="/admin/companies" element={adminOnly(<CompanyManagementPage token={auth.token} />)} /><Route path="/admin/market" element={adminOnly(<MarketControlsPage token={auth.token} />)} /><Route path="/admin/news" element={adminOnly(<NewsManagementPage token={auth.token} />)} /><Route path="/admin/notifications" element={adminOnly(<NotificationManagementPage token={auth.token} />)} /><Route path="/admin/snapshots" element={adminOnly(<SnapshotManagementPage token={auth.token} />)} /><Route path="/admin/events" element={adminOnly(<EventLogsPage token={auth.token} />)} /><Route path="/admin/network" element={adminOnly(<NetworkPage token={auth.token} />)} /><Route path="/admin/backups" element={adminOnly(<BackupManagementPage token={auth.token} />)} /><Route path="*" element={<Navigate to="/" replace />} /></Routes>;
 }
 

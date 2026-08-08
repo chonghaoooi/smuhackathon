@@ -7,6 +7,7 @@ import { config } from './config.js';
 import { bootDb, isFirstRun } from './bootstrap.js';
 import { db } from './db.js';
 import { createApi } from './routes.js';
+import { createTherapistApi } from './therapistRoutes.js';
 
 bootDb();
 
@@ -19,6 +20,7 @@ const httpServer = http.createServer(app);
 const io = new Server(httpServer, { cors: { origin: true } });
 
 app.use('/api', createApi(io));
+app.use('/api/therapist', createTherapistApi());
 app.get('/api/health', (_req, res) => {
   const market = db.prepare('SELECT * FROM market_settings WHERE id = 1').get();
   res.json({ ok: true, firstRun: isFirstRun(), market });
